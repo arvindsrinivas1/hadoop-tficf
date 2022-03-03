@@ -1,0 +1,1 @@
+/usr/local/hadoop/libexec/hdfs-config.sh

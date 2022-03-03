@@ -1,0 +1,1 @@
+/usr/local/hadoop/sbin/refresh-namenodes.sh
