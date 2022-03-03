@@ -47,8 +47,9 @@ public class TFICF {
 
 		/* First map reduce is run on the first input and if it succeeds then it is 
 		run on the second input */
-
+		System.out.println("XOXO");
         try{
+			System.out.println("Going to start first");
             ret = run(conf0, inputPath0, 0);
 			System.out.println("Returned from first");
 			System.out.println(ret);
@@ -104,7 +105,7 @@ public class TFICF {
 			wcMapperJob.setOutputValueClass(IntWritable.class);
 			FileInputFormat.addInputPath(wcMapperJob, wcInputPath);
 			FileOutputFormat.setOutputPath(wcMapperJob, wcOutputPath);
-			System.exit(wcMapperJob.waitForCompletion(true) ? 0 : 1);
+			// System.exit(wcMapperJob.waitForCompletion(true) ? 0 : 1);
 		// Create and execute Document Size job
 		
 			/************ YOUR CODE HERE ************/
@@ -115,7 +116,7 @@ public class TFICF {
 
 		//Return final job code , e.g. retrun tficfJob.waitForCompletion(true) ? 0 : 1
 			/************ YOUR CODE HERE ************/
-		return 0;
+		return(wcMapperJob.waitForCompletion(true) ? 0 : 1);
     }
 	
 	/*
@@ -140,9 +141,9 @@ public class TFICF {
 
 		String fileName = ((FileSplit) context.getInputSplit()).getPath().getName();
 
-		String line = value.toString().replaceAll("[^\\P{P}\\-\\[\\]]+", "").toLowerCase();
+		String line = value.toString().replaceAll("([^\\P{P}\\-\\[\\]\\xBF\\/]|\\=)+", "").toLowerCase();
 		// line = line.toString().replaceAll("^[0-9]+$", "");
-		System.out.println(line);
+		// System.out.println(line);
 		String wordSetString;
 		StringTokenizer itr = new StringTokenizer(line);
 		String token;
@@ -158,7 +159,11 @@ public class TFICF {
 			// if(onlyNumberCheck){
 			// 	continue;
 			// }
-			
+			System.out.println(token);
+			// if(token.matches("^.*=.*$")){
+			// 	token = token.replaceAll("^.*(=).*", "");
+			// 	System.out.println(token);
+			// }
 			startsWithLetterCheck = token.matches("^[a-z]+.*$");
 			if(!startsWithLetterCheck){
 				continue;

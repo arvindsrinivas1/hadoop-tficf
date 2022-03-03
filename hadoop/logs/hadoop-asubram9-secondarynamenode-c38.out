@@ -317,3 +317,195 @@ Checkpoint Period      : 3600 seconds
 Checkpoint Transactions: 1000000
 Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
 Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.SecondaryNameNode (SecondaryNameNode.java:doCheckpoint(566)) - Checkpoint done. New Image Size: 1357
+2022-03-02 19:44:50,836 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.SecondaryNameNode (SecondaryNameNode.java:run(453)) - Image has not changed. Will not download image.
+2022-03-02 19:44:50,838 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.TransferFsImage (TransferFsImage.java:getFileClient(396)) - Opening connection to http://c38:50070/imagetransfer?getedit=1&startTxId=209&endTxId=367&storageInfo=-63:1407200873:0:CID-7ee3415a-43a1-4734-8b95-84ec0ea65e60
+2022-03-02 19:44:50,872 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.TransferFsImage (TransferFsImage.java:receiveFile(553)) - Transfer took 0.03s at 800.00 KB/s
+2022-03-02 19:44:50,873 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.TransferFsImage (TransferFsImage.java:downloadEditsToStorage(168)) - Downloaded file edits_tmp_0000000000000000209-0000000000000000367_0000000006571476805 size 0 bytes.
+2022-03-02 19:44:50,874 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.Checkpointer (Checkpointer.java:rollForwardByApplyingLogs(309)) - Checkpointer about to load edits from 1 stream(s).
+2022-03-02 19:44:50,874 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.FSImage (FSImage.java:loadEdits(834)) - Reading /tmp/hadoop-asubram9/dfs/namesecondary/current/edits_0000000000000000209-0000000000000000367 expecting start txid #209
+2022-03-02 19:44:50,875 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.FSImage (FSEditLogLoader.java:loadFSEdits(142)) - Start loading edits file /tmp/hadoop-asubram9/dfs/namesecondary/current/edits_0000000000000000209-0000000000000000367
+2022-03-02 19:44:50,920 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.FSImage (FSEditLogLoader.java:loadFSEdits(145)) - Edits file /tmp/hadoop-asubram9/dfs/namesecondary/current/edits_0000000000000000209-0000000000000000367 of size 21064 edits # 159 loaded in 0 seconds
+2022-03-02 19:44:50,966 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.NNStorageRetentionManager (NNStorageRetentionManager.java:getImageTxIdToRetain(203)) - Going to retain 2 images with txid >= 208
+2022-03-02 19:44:50,966 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.NNStorageRetentionManager (NNStorageRetentionManager.java:purgeImage(225)) - Purging old image FSImageFile(file=/tmp/hadoop-asubram9/dfs/namesecondary/current/fsimage_0000000000000000004, cpktTxId=0000000000000000004)
+2022-03-02 19:44:51,053 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.TransferFsImage (TransferFsImage.java:uploadImageFromStorage(237)) - Uploaded image with txid 367 to namenode at http://c38:50070 in 0.073 seconds
+2022-03-02 19:44:51,054 WARN  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.SecondaryNameNode (SecondaryNameNode.java:doCheckpoint(566)) - Checkpoint done. New Image Size: 1357
+2022-03-02 20:44:51,709 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.SecondaryNameNode (SecondaryNameNode.java:run(453)) - Image has not changed. Will not download image.
+2022-03-02 20:44:51,710 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.TransferFsImage (TransferFsImage.java:getFileClient(396)) - Opening connection to http://c38:50070/imagetransfer?getedit=1&startTxId=368&endTxId=679&storageInfo=-63:1407200873:0:CID-7ee3415a-43a1-4734-8b95-84ec0ea65e60
+2022-03-02 20:44:51,746 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.TransferFsImage (TransferFsImage.java:receiveFile(553)) - Transfer took 0.03s at 1366.67 KB/s
+2022-03-02 20:44:51,747 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.TransferFsImage (TransferFsImage.java:downloadEditsToStorage(168)) - Downloaded file edits_tmp_0000000000000000368-0000000000000000679_0000000006575077677 size 0 bytes.
+2022-03-02 20:44:51,748 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.Checkpointer (Checkpointer.java:rollForwardByApplyingLogs(309)) - Checkpointer about to load edits from 1 stream(s).
+2022-03-02 20:44:51,749 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.FSImage (FSImage.java:loadEdits(834)) - Reading /tmp/hadoop-asubram9/dfs/namesecondary/current/edits_0000000000000000368-0000000000000000679 expecting start txid #368
+2022-03-02 20:44:51,749 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.FSImage (FSEditLogLoader.java:loadFSEdits(142)) - Start loading edits file /tmp/hadoop-asubram9/dfs/namesecondary/current/edits_0000000000000000368-0000000000000000679
+2022-03-02 20:44:51,815 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.FSImage (FSEditLogLoader.java:loadFSEdits(145)) - Edits file /tmp/hadoop-asubram9/dfs/namesecondary/current/edits_0000000000000000368-0000000000000000679 of size 42248 edits # 312 loaded in 0 seconds
+2022-03-02 20:44:51,864 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.NNStorageRetentionManager (NNStorageRetentionManager.java:getImageTxIdToRetain(203)) - Going to retain 2 images with txid >= 367
+2022-03-02 20:44:51,865 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.NNStorageRetentionManager (NNStorageRetentionManager.java:purgeImage(225)) - Purging old image FSImageFile(file=/tmp/hadoop-asubram9/dfs/namesecondary/current/fsimage_0000000000000000208, cpktTxId=0000000000000000208)
+2022-03-02 20:44:51,969 INFO  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.TransferFsImage (TransferFsImage.java:uploadImageFromStorage(237)) - Uploaded image with txid 679 to namenode at http://c38:50070 in 0.086 seconds
+2022-03-02 20:44:51,970 WARN  [SecondaryNameNode Status
+Name Node Address      : c38/10.4.1.39:9000
+Start Time             : Wed Mar 02 17:43:44 EST 2022
+Last Checkpoint        : -- seconds ago
+Checkpoint Period      : 3600 seconds
+Checkpoint Transactions: 1000000
+Checkpoint Dirs        : [file:///tmp/hadoop-asubram9/dfs/namesecondary]
+Checkpoint Edits Dirs  : [file:///tmp/hadoop-asubram9/dfs/namesecondary]] namenode.SecondaryNameNode (SecondaryNameNode.java:doCheckpoint(566)) - Checkpoint done. New Image Size: 1618
