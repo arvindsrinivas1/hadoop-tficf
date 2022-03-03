@@ -47,7 +47,6 @@ public class TFICF {
 
 		/* First map reduce is run on the first input and if it succeeds then it is 
 		run on the second input */
-		System.out.println("XOXO");
         try{
 			System.out.println("Going to start first");
             ret = run(conf0, inputPath0, 0);
@@ -105,9 +104,21 @@ public class TFICF {
 			wcMapperJob.setOutputValueClass(IntWritable.class);
 			FileInputFormat.addInputPath(wcMapperJob, wcInputPath);
 			FileOutputFormat.setOutputPath(wcMapperJob, wcOutputPath);
+			wcMapperJob.waitForCompletion(true);
+
 			// System.exit(wcMapperJob.waitForCompletion(true) ? 0 : 1);
 		// Create and execute Document Size job
 		
+			Job dsMapperJob = Job.getInstance(conf, "dsMapperJob");
+			dsMapperJob.setJarByClass(TFICF.class);
+			dsMapperJob.setMapperClass(DSMapper.class);
+			dsMapperJob.setReducerClass(DSReducer.class);
+			dsMapperJob.setOutputKeyClass(Text.class);
+			dsMapperJob.setOutputValueClass(Text.class);
+			FileInputFormat.addInputPath(dsMapperJob, dsInputPath);
+			FileOutputFormat.setOutputPath(dsMapperJob, dsOutputPath);
+			// dsMapperJob.waitForCompletion(true);
+
 			/************ YOUR CODE HERE ************/
 		
 		//Create and execute TFICF job
@@ -116,7 +127,7 @@ public class TFICF {
 
 		//Return final job code , e.g. retrun tficfJob.waitForCompletion(true) ? 0 : 1
 			/************ YOUR CODE HERE ************/
-		return(wcMapperJob.waitForCompletion(true) ? 0 : 1);
+		return(dsMapperJob.waitForCompletion(true) ? 0 : 1);
     }
 	
 	/*
@@ -159,7 +170,7 @@ public class TFICF {
 			// if(onlyNumberCheck){
 			// 	continue;
 			// }
-			System.out.println(token);
+			// System.out.println(token);
 			// if(token.matches("^.*=.*$")){
 			// 	token = token.replaceAll("^.*(=).*", "");
 			// 	System.out.println(token);
@@ -216,7 +227,37 @@ public class TFICF {
 	public static class DSMapper extends Mapper<Object, Text, Text, Text> {
 		
 		/************ YOUR CODE HERE ************/
-		
+		private final static IntWritable one = new IntWritable(1);
+
+		public void map(Object key, Text value, Context context
+		) throws IOException, InterruptedException {
+			
+			String word;
+			String document;
+			String count;
+
+			Text wordKey = new Text();
+			Text wordValue = new Text();
+
+			String line = value.toString();
+			String[] splitLine = line.split("\\s+");
+			// splitLine[0] is word@document | splitLine[1] is count;
+	
+			String[] wordDocument = splitLine[0].split("\\@");
+			// //wordDocument[0] is the word | wordDocument[1] is the document
+
+			String outputString;
+			
+			outputString = String.format("%s=%s", wordDocument[0], splitLine[1]);
+
+
+			wordKey.set(wordDocument[1]);
+			wordValue.set(outputString);
+			// wordKey.set(wordDocument[1]);
+			// wordValue.set(outputString);
+			System.out.println("Done with DSMapper");
+			context.write(wordKey, wordValue);
+		}
     }
 
     /*
@@ -230,6 +271,47 @@ public class TFICF {
 	public static class DSReducer extends Reducer<Text, Text, Text, Text> {
 		
 		/************ YOUR CODE HERE ************/
+		public void reduce(Text document, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+			/* We get document = documentName and values = list of word=wordCount values in that file */
+			int docSize = 0;
+			String outputKey;
+			String outputValue;
+
+			System.out.println("Starting with DSReducer");
+			System.out.println(document);
+
+			List<String> backup = new ArrayList<String>();
+
+			Iterator<Text> iter = values.iterator();
+			System.out.println("InputValues:");
+			for(Text v : values){
+				System.out.println(v.toString());
+				backup.add(v.toString());
+				docSize += Integer.parseInt(v.toString().split("=")[1]);
+			}
+
+			System.out.println(docSize);
+
+			System.out.println("Klose");
+			for(String val : backup){
+				System.out.println("Mango");
+				String[] splitValues = val.split("=");
+
+				outputKey = String.format("%s@%s", splitValues[0], document.toString());
+				outputValue = String.format("%s/%s", splitValues[1], String.valueOf(docSize));
+				System.out.println(outputKey);
+				System.out.println(outputValue);
+
+				Text wordKey = new Text();
+				Text wordValue = new Text();
+
+				wordKey.set(outputKey);
+				wordValue.set(outputValue);
+
+				context.write(wordKey, wordValue);
+			}
+
+		}
 		
     }
 	

@@ -1,0 +1,1 @@
+/usr/local/hadoop/libexec/hadoop-config.cmd

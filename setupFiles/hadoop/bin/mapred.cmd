@@ -1,0 +1,1 @@
+/usr/local/hadoop/bin/mapred.cmd

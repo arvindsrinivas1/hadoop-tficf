@@ -1,0 +1,1 @@
+/usr/local/hadoop/sbin/distribute-exclude.sh

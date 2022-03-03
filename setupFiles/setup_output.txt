@@ -1,0 +1,5 @@
+ln: failed to create symbolic link ‘./bin’: File exists
+ln: failed to create symbolic link ‘./etc’: File exists
+ln: failed to create symbolic link ‘./libexec’: File exists
+ln: failed to create symbolic link ‘./sbin’: File exists
+Killed by signal 2.

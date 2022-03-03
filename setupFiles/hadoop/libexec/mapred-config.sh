@@ -1,0 +1,1 @@
+/usr/local/hadoop/libexec/mapred-config.sh
