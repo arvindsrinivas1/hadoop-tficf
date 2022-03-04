@@ -1,3 +1,6 @@
 hadoop/logs
 *.class
 *.jar
+output0
+output1
+hadoop_output.txt
