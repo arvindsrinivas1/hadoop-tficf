@@ -39,8 +39,6 @@ public class TFICF {
 		Configuration conf1 = new Configuration();
 		
 		// Input and output paths for each job
-		System.out.println(args[0]);
-		System.out.println(args[1]);
 
 		Path inputPath0 = new Path(args[0]);
 		Path inputPath1 = new Path(args[1]);
@@ -48,15 +46,11 @@ public class TFICF {
 		/* First map reduce is run on the first input and if it succeeds then it is 
 		run on the second input */
         try{
-			System.out.println("Going to start first");
             ret = run(conf0, inputPath0, 0);
-			System.out.println("Returned from first");
-			System.out.println(ret);
         }catch(Exception e){
             e.printStackTrace();
         }
         if(ret == 0){
-			System.out.println("Starting second");
         	try{
             	run(conf1, inputPath1, 1);
         	}catch(Exception e){
@@ -117,17 +111,25 @@ public class TFICF {
 			dsMapperJob.setOutputValueClass(Text.class);
 			FileInputFormat.addInputPath(dsMapperJob, dsInputPath);
 			FileOutputFormat.setOutputPath(dsMapperJob, dsOutputPath);
+			dsMapperJob.waitForCompletion(true);
 			// dsMapperJob.waitForCompletion(true);
 
 			/************ YOUR CODE HERE ************/
 		
 		//Create and execute TFICF job
-		
+			Job tficfMapperJob = Job.getInstance(conf, "tficfMapperJob");
+			tficfMapperJob.setJarByClass(TFICF.class);
+			tficfMapperJob.setMapperClass(TFICFMapper.class);
+			tficfMapperJob.setReducerClass(TFICFReducer.class);
+			tficfMapperJob.setOutputKeyClass(Text.class);
+			tficfMapperJob.setOutputValueClass(Text.class);
+			FileInputFormat.addInputPath(tficfMapperJob, tficfInputPath);
+			FileOutputFormat.setOutputPath(tficfMapperJob, tficfOutputPath);
+			return(tficfMapperJob.waitForCompletion(true) ? 0 : 1);
 			/************ YOUR CODE HERE ************/
 
 		//Return final job code , e.g. retrun tficfJob.waitForCompletion(true) ? 0 : 1
 			/************ YOUR CODE HERE ************/
-		return(dsMapperJob.waitForCompletion(true) ? 0 : 1);
     }
 	
 	/*
@@ -148,13 +150,10 @@ public class TFICF {
 		public void map(Object key, Text value, Context context
 		) throws IOException, InterruptedException {
 
-		// System.out.println(value.toString());
-
 		String fileName = ((FileSplit) context.getInputSplit()).getPath().getName();
 
 		String line = value.toString().replaceAll("([^\\P{P}\\-\\[\\]\\xBF\\/]|\\=)+", "").toLowerCase();
 		// line = line.toString().replaceAll("^[0-9]+$", "");
-		// System.out.println(line);
 		String wordSetString;
 		StringTokenizer itr = new StringTokenizer(line);
 		String token;
@@ -170,10 +169,8 @@ public class TFICF {
 			// if(onlyNumberCheck){
 			// 	continue;
 			// }
-			// System.out.println(token);
 			// if(token.matches("^.*=.*$")){
 			// 	token = token.replaceAll("^.*(=).*", "");
-			// 	System.out.println(token);
 			// }
 			startsWithLetterCheck = token.matches("^[a-z]+.*$");
 			if(!startsWithLetterCheck){
@@ -188,7 +185,6 @@ public class TFICF {
 			wordSetString = String.format("%s@%s", token, fileName);
 			word.set(wordSetString);
 			/* public void write(KEYOUT key, VALUEOUT value) */
-			// System.out.println(wordSetString);
 			context.write(word, one);
 		}
 
@@ -206,15 +202,17 @@ public class TFICF {
 	 * wordCount = number of times word appears in document
 	 */
 	public static class WCReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
-		private IntWritable result = new IntWritable();
 
 		public void reduce(Text key, Iterable<IntWritable> values,Context context) throws IOException, InterruptedException {
 			int sum = 0;
 			for (IntWritable val : values) {
 				sum += val.get();
 			}
-			result.set(sum);
-			context.write(key, result);
+
+			IntWritable outputValue = new IntWritable();
+			outputValue.set(sum);
+
+			context.write(key, outputValue);
 		}
     }
 	
@@ -243,7 +241,7 @@ public class TFICF {
 			String[] splitLine = line.split("\\s+");
 			// splitLine[0] is word@document | splitLine[1] is count;
 	
-			String[] wordDocument = splitLine[0].split("\\@");
+			String[] wordDocument = splitLine[0].split("@");
 			// //wordDocument[0] is the word | wordDocument[1] is the document
 
 			String outputString;
@@ -253,9 +251,7 @@ public class TFICF {
 
 			wordKey.set(wordDocument[1]);
 			wordValue.set(outputString);
-			// wordKey.set(wordDocument[1]);
-			// wordValue.set(outputString);
-			System.out.println("Done with DSMapper");
+
 			context.write(wordKey, wordValue);
 		}
     }
@@ -277,30 +273,21 @@ public class TFICF {
 			String outputKey;
 			String outputValue;
 
-			System.out.println("Starting with DSReducer");
-			System.out.println(document);
-
+			/* The Iterable object is only iterable once. Hence, since we are using it to count the docSize
+			we have to save the values in another datastructure so that we can use it another time.*/
 			List<String> backup = new ArrayList<String>();
 
 			Iterator<Text> iter = values.iterator();
-			System.out.println("InputValues:");
 			for(Text v : values){
-				System.out.println(v.toString());
 				backup.add(v.toString());
 				docSize += Integer.parseInt(v.toString().split("=")[1]);
 			}
 
-			System.out.println(docSize);
-
-			System.out.println("Klose");
 			for(String val : backup){
-				System.out.println("Mango");
 				String[] splitValues = val.split("=");
 
 				outputKey = String.format("%s@%s", splitValues[0], document.toString());
 				outputValue = String.format("%s/%s", splitValues[1], String.valueOf(docSize));
-				System.out.println(outputKey);
-				System.out.println(outputValue);
 
 				Text wordKey = new Text();
 				Text wordValue = new Text();
@@ -310,9 +297,7 @@ public class TFICF {
 
 				context.write(wordKey, wordValue);
 			}
-
 		}
-		
     }
 	
 	/*
@@ -324,7 +309,29 @@ public class TFICF {
 	public static class TFICFMapper extends Mapper<Object, Text, Text, Text> {
 
 		/************ YOUR CODE HERE ************/
-		
+		public void map(Object key, Text value, Context context
+		) throws IOException, InterruptedException {
+	
+			/* System.out.println(value.toString()); filled@al-green.txt	2/16597 */
+			String line = value.toString();
+			String[] splitLine = line.split("\\s+");
+			/* splitLine[0] = word@document | splitLine[1] = wc/docSize */
+
+			String[] w = splitLine[0].split("@");
+			/*w[0] = word | w[1] = document */
+			String[] d = splitLine[1].split("/");
+			/* d[0] = wc | d[1] = docSize */
+
+			String outputString = String.format("%s=%s/%s", w[1], d[0], d[1]);
+
+			Text outputKey = new Text();
+			Text outputValue = new Text();
+
+			outputKey.set(w[0]);
+			outputValue.set(outputString);
+
+			context.write(outputKey, outputValue);
+		}
     }
 
     /*
@@ -343,6 +350,17 @@ public class TFICF {
 	 *       extremely large datasets, having a for loop iterate through all the (key,value) pairs 
 	 *       is highly inefficient!
 	 */
+
+
+	// wij =log(1+fij)×log(N +1/nj + 1)
+	
+	/* wij -> Weight of term j in document i
+	   N -> Number of documents in the corpus 
+	   j -> Each term j
+	   nj -> number of documents in the corpus the term j occured once or more
+	   fij is the number of occurrences of term j in document i (TF)
+	*/
+
 	public static class TFICFReducer extends Reducer<Text, Text, Text, Text> {
 		
 		private static int numDocs;
@@ -355,11 +373,68 @@ public class TFICF {
 		}
 		
 		public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-			
 			/************ YOUR CODE HERE ************/
-	 
-			//Put the output (key,value) pair into the tficfMap instead of doing a context.write
-			// tficfMap.put(/*document@word*/, /*TFICF*/);
+			// int wordCount = Integer.parseInt();
+
+			/* The shuffler(or something else in hadoop) somehow magically groups based on key and that is given to 
+			each of the reducer workers. Input for each reduce() calls is something like:
+			Key: a
+			Values: janisjoplin.txt=329/21502
+					bruce-springsteen.txt=543/21436
+					al-green.txt=209/16597 */
+			int number_of_documents_with_word = 0;
+			List<String> backup = new ArrayList<String>();
+
+			for(Text val : values){
+				backup.add(val.toString());
+				++number_of_documents_with_word; //nj
+			}
+
+			double wij;
+			double tf;
+			double icf;
+
+			int wcCalc;
+			int dsCalc;
+
+
+			for(String val2 : backup){
+				/* We have to calculate fij which is the frequence of the word in that document.
+				So for each value of val2(ie each word/document pair), we have to calculate wij and
+				put it in the hashmap */
+
+				String[] document_frequence_split = val2.split("=");
+				/* document_f_split[0] -> document name
+				   document_f_split[1] -> wordCount/docSize
+				*/
+				String outputString;
+				outputString = String.format("%s@%s", document_frequence_split[0], key.toString());
+
+				String[] wordCountBydocSize = document_frequence_split[1].split("/");
+				/* wordCountBydocSize[0] -> wordCount (in that document)
+				   wordCountBydocSize[1] -> docSize
+				*/
+				wcCalc = Integer.parseInt(wordCountBydocSize[0]);
+				dsCalc = Integer.parseInt(wordCountBydocSize[1]);
+
+				tf = Math.log(1 + ((double)wcCalc/dsCalc));
+				icf = Math.log((double)(numDocs + 1)/(number_of_documents_with_word + 1));
+				
+				wij = tf * icf;
+				
+				Text outputValue = new Text();
+				Text outputKey = new Text();
+
+				System.out.println("Wakaka");
+				System.out.println(key.toString());
+				System.out.println(outputString);
+				System.out.println(String.valueOf(wij));
+
+				outputKey.set(outputString);
+				outputValue.set(String.valueOf(wij));
+
+				tficfMap.put(outputKey, outputValue);
+			}
 		}
 		
 		// sorts the output (key,value) pairs that are contained in the tficfMap
