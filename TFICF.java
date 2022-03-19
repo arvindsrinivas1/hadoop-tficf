@@ -86,23 +86,23 @@ public class TFICF {
 		if (hdfs.exists(tficfOutputPath))
 			hdfs.delete(tficfOutputPath, true);
 		
-		// Create and execute Word Count job
-		
-			/************ YOUR CODE HERE ************/
+		// Create and execute Word Count job		
 			Job wcMapperJob = Job.getInstance(conf, "wcMapperJob");
 			wcMapperJob.setJarByClass(TFICF.class);
 			wcMapperJob.setMapperClass(WCMapper.class);
-			wcMapperJob.setCombinerClass(WCReducer.class); // Needed? What is this?
+			wcMapperJob.setCombinerClass(WCReducer.class); //To DO:  Needed? What is this?
 			wcMapperJob.setReducerClass(WCReducer.class);
 			wcMapperJob.setOutputKeyClass(Text.class);
 			wcMapperJob.setOutputValueClass(IntWritable.class);
+
+			/* Info: FileInputFormat class has the computeInputSplit function that decides the 
+			size of each input split. Each inputSplit is worked on by a mapper task */
 			FileInputFormat.addInputPath(wcMapperJob, wcInputPath);
 			FileOutputFormat.setOutputPath(wcMapperJob, wcOutputPath);
+
 			wcMapperJob.waitForCompletion(true);
 
-			// System.exit(wcMapperJob.waitForCompletion(true) ? 0 : 1);
 		// Create and execute Document Size job
-		
 			Job dsMapperJob = Job.getInstance(conf, "dsMapperJob");
 			dsMapperJob.setJarByClass(TFICF.class);
 			dsMapperJob.setMapperClass(DSMapper.class);
@@ -112,11 +112,10 @@ public class TFICF {
 			FileInputFormat.addInputPath(dsMapperJob, dsInputPath);
 			FileOutputFormat.setOutputPath(dsMapperJob, dsOutputPath);
 			dsMapperJob.waitForCompletion(true);
-			// dsMapperJob.waitForCompletion(true);
 
-			/************ YOUR CODE HERE ************/
+		// 	/************ YOUR CODE HERE ************/
 		
-		//Create and execute TFICF job
+		// //Create and execute TFICF job
 			Job tficfMapperJob = Job.getInstance(conf, "tficfMapperJob");
 			tficfMapperJob.setJarByClass(TFICF.class);
 			tficfMapperJob.setMapperClass(TFICFMapper.class);
@@ -141,52 +140,116 @@ public class TFICF {
 	 * word = an individual word in the document
 	 * document = the filename of the document
 	 */
+
+	/* Notes about mappers:
+		Input files are split into logical units of inputSplits that have some k-v pairs(records in each).
+		Each inputSplit is picked up and worked by a MapperTask
+		InputSplit Class stores information about the location of the inputSplit chunks. This helps in spawning
+		the mapper tasks close to the location of data (DataLocality)
+	*/
+
+
+	/* Each inputSplit will have some lines(records) in it. Here, it looks like each record is handled by a different mapper task.
+	Key Value check print function gives:
+		WCMAPPER
+		10 ---->(Key: Offset of that line in that file
+		They come from everywhere (The line)
+
+		Output is ( (word@document) , 1 ). So aggregation will be done based on word@document).
+		TIP to self : So, think about what your mapper k-v output should be by thinking about on what value we want 
+		aggreagation to be done
+
+		Try to think about what kind of data manipulation/processing my mapper should do so that it can produce
+		an intermediate k-v pair on which the reducer can work to produce an aggregated result
+	*/
 	public static class WCMapper extends Mapper<Object, Text, Text, IntWritable> {
-		// public static final Log log = LogFactory.getLog(WCMapper.class);
-		/************ YOUR CODE HERE ************/
-		private final static IntWritable one = new IntWritable(1);
-		private Text word = new Text();
+		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 
-		public void map(Object key, Text value, Context context
-		) throws IOException, InterruptedException {
 
-		String fileName = ((FileSplit) context.getInputSplit()).getPath().getName();
+			/* Check what Key and value values are 
+			System.out.println("WCMAPPER");
+			System.out.println(key);
+			System.out.println(value);
+			*/
 
-		String line = value.toString().replaceAll("([^\\P{P}\\-\\[\\]\\xBF\\/]|\\=)+", "").toLowerCase();
-		// line = line.toString().replaceAll("^[0-9]+$", "");
-		String wordSetString;
-		StringTokenizer itr = new StringTokenizer(line);
-		String token;
-		boolean onlyNumberCheck;
-		boolean startsWithLetterCheck;
-		boolean bracketWithOnlyLetterCheck;
+			/* Source: https://stackoverflow.com/questions/19012482/how-to-get-the-input-file-name-in-the-mapper-in-a-hadoop-program */
+			String fileName = ((FileSplit) context.getInputSplit()).getPath().getName();
 
-		while (itr.hasMoreTokens()) {
-			token = itr.nextToken();
 
-			//Checks
-			// onlyNumberCheck = token.matches("[0-9]+");
-			// if(onlyNumberCheck){
-			// 	continue;
-			// }
-			// if(token.matches("^.*=.*$")){
-			// 	token = token.replaceAll("^.*(=).*", "");
-			// }
-			startsWithLetterCheck = token.matches("^[a-z]+.*$");
-			if(!startsWithLetterCheck){
-				continue;
+			/* Replace all:
+			^ -> not
+			\P -> not a punctuation
+			-, [,], xBF, = -> characters that we want to retain
+			| = -> = is not considered in \p so we have to give that seperately
+			Hence, replace all not(not a punctuation, -, [,],xBF, =) => Replace all (punctuation, not -, not [ ......)
+			That is, all punctuations except [,], - , xBF, = are removed
+
+			*/
+
+			// String line = value.toString().replaceAll("^\\[.*\\]$", "").toLowerCase();
+			// line = line.replaceAll("\\s+\\[.*\\]", "").toLowerCase();
+
+			/* Note 1: We cant split(tokenize) it first and then remove punctuations because we would lose 
+			cases like [chorus repeat x2] */
+			//String line = value.toString().replaceAll("([^\\P{P}\\-\\[\\]\\xBF]|\\=)+", "").toLowerCase();
+			StringTokenizer itr = new StringTokenizer(value.toString(), " ");
+			/* replace [] tha are preceeded by a  space but don't delete it if it is preceede dby another character */
+			// line = line.replaceAll("^\\[.*\\]$", "");
+			// line = line.replaceAll("\\s+\\[.*\\]", "");
+
+
+			// line = line.toString().replaceAll("^[0-9]+$", "");
+			String wordSetString;
+			// StringTokenizer itr = new StringTokenizer(line);
+			String token;
+			boolean onlyNumberCheck;
+			boolean startsWithLetterCheck;
+			boolean bracketWithOnlyLetterCheck;
+
+			Text word = new Text();
+			IntWritable wordValue = new IntWritable();
+			wordValue.set(1);
+
+			while (itr.hasMoreTokens()) {
+				token = itr.nextToken();
+				System.out.println("Before:");
+				System.out.println(token);
+				token = token.replaceAll("([^\\P{P}\\-\\[\\]\\xBF\\/]|\\=)+", "").toLowerCase();
+				System.out.println("After:");
+				System.out.println(token);
+				//Checks
+				// onlyNumberCheck = token.matches("[0-9]+");
+				// if(onlyNumberCheck){
+				// 	continue;
+				// }
+				// if(token.matches("^.*=.*$")){
+				// 	token = token.replaceAll("^.*(=).*", "");
+				// }
+				startsWithLetterCheck = token.matches("^[a-z]+.*$");
+				if(!startsWithLetterCheck){
+					// System.out.println(token);
+					continue;
+				}
+
+				// line = line.replaceAll("^\\[.*\\]$", "");
+				// line = line.replaceAll("\\s+\\[.*\\]", "");
+				// token = token.replaceAll("[", "");
+
+				// At this stage we have cleared words that start with [ and with ].
+				// But we might have words that have [] inside them ex: he[ll]o.
+				// For these words we just have to remove the [ and ]
+				token = token.replaceAll("[\\[\\]]", "");
+
+				// bracketWithOnlyLetterCheck = token.matches();
+				// if(bracketWithOnlyLetterCheck){
+				// 	continue;
+				// }
+				//
+				wordSetString = String.format("%s@%s", token, fileName);
+				word.set(wordSetString);
+				/* public void write(KEYOUT key, VALUEOUT value) */
+				context.write(word, wordValue);
 			}
-
-			// bracketWithOnlyLetterCheck = token.matches();
-			// if(bracketWithOnlyLetterCheck){
-			// 	continue;
-			// }
-			//
-			wordSetString = String.format("%s@%s", token, fileName);
-			word.set(wordSetString);
-			/* public void write(KEYOUT key, VALUEOUT value) */
-			context.write(word, one);
-		}
 
 			// log.info("WhiteChocolateMocha");
 		}
@@ -201,11 +264,24 @@ public class TFICF {
 	 *
 	 * wordCount = number of times word appears in document
 	 */
+
+
+	 /* This aggregates the input on the basis of it's key, which is the word@document in this case */
+	 /* Each agregrated chunk will be processed by a reducer task */
+	 /* WCREDUCER
+	 	a@bruce-springsteen.txt ----> (Key)
+		(Number of 1s) ->(values)
+	*/
 	public static class WCReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
 
 		public void reduce(Text key, Iterable<IntWritable> values,Context context) throws IOException, InterruptedException {
 			int sum = 0;
+			
+			/*  Iterable<IntWritable> values will have 1s for each count of that word in that document,
+			that is, we group based on word@document as the key. Sum it up to get the total count of that 
+			word in the document. Each reducer task does this sum aggregration on count  */
 			for (IntWritable val : values) {
+				// System.out.println(val);
 				sum += val.get();
 			}
 
@@ -222,18 +298,17 @@ public class TFICF {
 	 * Input:  ( (word@document) , wordCount )
 	 * Output: ( document , (word=wordCount) )
 	 */
+
+	 /* Key-> OFfset of the line
+	 Value -> line 
+	 */
 	public static class DSMapper extends Mapper<Object, Text, Text, Text> {
 		
-		/************ YOUR CODE HERE ************/
-		private final static IntWritable one = new IntWritable(1);
-
 		public void map(Object key, Text value, Context context
 		) throws IOException, InterruptedException {
-			
 			String word;
 			String document;
 			String count;
-
 			Text wordKey = new Text();
 			Text wordValue = new Text();
 
@@ -264,10 +339,10 @@ public class TFICF {
 	 *
 	 * docSize = total number of words in the document
 	 */
+
 	public static class DSReducer extends Reducer<Text, Text, Text, Text> {
 		
-		/************ YOUR CODE HERE ************/
-		public void reduce(Text document, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+		public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 			/* We get document = documentName and values = list of word=wordCount values in that file */
 			int docSize = 0;
 			String outputKey;
@@ -278,7 +353,13 @@ public class TFICF {
 			List<String> backup = new ArrayList<String>();
 
 			Iterator<Text> iter = values.iterator();
+			// NO idea why this doesnt work. Check later. Iterable is weird.
+			// while(iter.hasNext()){
+			// 	backup.add(iter.next().toString());
+			// 	docSize += Integer.parseInt(iter.next().toString().split("=")[1]);
+			// }
 			for(Text v : values){
+				System.out.println(v);
 				backup.add(v.toString());
 				docSize += Integer.parseInt(v.toString().split("=")[1]);
 			}
@@ -286,7 +367,7 @@ public class TFICF {
 			for(String val : backup){
 				String[] splitValues = val.split("=");
 
-				outputKey = String.format("%s@%s", splitValues[0], document.toString());
+				outputKey = String.format("%s@%s", splitValues[0], key.toString());
 				outputValue = String.format("%s/%s", splitValues[1], String.valueOf(docSize));
 
 				Text wordKey = new Text();
@@ -312,7 +393,7 @@ public class TFICF {
 		public void map(Object key, Text value, Context context
 		) throws IOException, InterruptedException {
 	
-			/* System.out.println(value.toString()); filled@al-green.txt	2/16597 */
+			/* Sxystem.out.println(value.toString()); filled@al-green.txt	2/16597 */
 			String line = value.toString();
 			String[] splitLine = line.split("\\s+");
 			/* splitLine[0] = word@document | splitLine[1] = wc/docSize */
@@ -424,11 +505,6 @@ public class TFICF {
 				
 				Text outputValue = new Text();
 				Text outputKey = new Text();
-
-				System.out.println("Wakaka");
-				System.out.println(key.toString());
-				System.out.println(outputString);
-				System.out.println(String.valueOf(wij));
 
 				outputKey.set(outputString);
 				outputValue.set(String.valueOf(wij));
